@@ -135,24 +135,35 @@ int main(void)
     //     0.5f, -0.5f, 0.0f,
     //     0.0f, 0.5f, 0.0f};
 
-    float vertices1[] = {
-        0.25, 0.25, 0.0,
-        0.75, 0.25, 0.0,
-        0.5, 0.75, 0.0,
+    float vertices[] = {
+        0.5f, 0.5f, 0.0f,   // top right
+        0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f   // top left
+    };
 
-        -0.25, 0.25, 0.0,
-        -0.75, 0.25, 0.0,
-        -0.5, 0.75, 0.0};
+    unsigned int indices[] = {
+        // note that we start from 0!
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
+
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
 
     // vertex buffer object, this is the buffer that will store our vertex data
     unsigned int VBO;
     glGenBuffers(1, &VBO);
+
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // tell OpenGL how to interpret the vertex data
     /*
@@ -166,6 +177,9 @@ int main(void)
     The last parameter is of type void* and thus requires that weird cast. This is the offset of where the position data begins in the buffer. Since the position data is at the start of the data array this value is just 0. We will explore this parameter in more detail later on
 
     */
+    /* `glVertexAttribPointer` is a function in OpenGL that specifies how to interpret the vertex data
+    stored in a buffer. It tells OpenGL how to connect the vertex data with the vertex shader's
+    input variables. */
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     // enable the vertex attribute
     glEnableVertexAttribArray(0);
@@ -176,10 +190,10 @@ int main(void)
     // Here's a brief explanation of what happens when you call glBindVertexArray(0):
     // If you call glBindVertexArray(0), it unbinds the currently bound VAO.
     // This is useful if you want to ensure that no VAO is bound, which can help prevent accidental modifications to the VAO state.
-    // glBindVertexArray(0);
 
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glBindVertexArray(VAO);
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -189,11 +203,8 @@ int main(void)
         // clear the color buffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        // now use the program
-
         // copy our vertex data into the buffer
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // check and call events and swap the buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -201,7 +212,7 @@ int main(void)
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
     glfwTerminate();
     return 0;
