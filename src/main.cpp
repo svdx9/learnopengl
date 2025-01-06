@@ -81,53 +81,37 @@ int main(void)
     // create a vertex shader
     auto vertexShaderSource = loadShader("vertex_shader_1.glsl");
     auto v = vertexShaderSource.c_str();
+    auto fragmentShaderSource1 = loadShader("fragment_shader_1.glsl");
+    auto f1 = fragmentShaderSource1.c_str();
+    auto fragmentShaderSource2 = loadShader("fragment_shader_2.glsl");
+    auto f2 = fragmentShaderSource2.c_str();
+
+    auto shaderProgram1 = glCreateProgram();
+    auto shaderProgram2 = glCreateProgram();
 
     auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    auto fragmentShader1 = glCreateShader(GL_FRAGMENT_SHADER);
+    auto fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+
     glShaderSource(vertexShader, 1, &v, NULL);
+    glShaderSource(fragmentShader1, 1, &f1, NULL);
+    glShaderSource(fragmentShader2, 1, &f2, NULL);
+
     glCompileShader(vertexShader);
+    glCompileShader(fragmentShader1);
+    glCompileShader(fragmentShader2);
 
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "Error: Vertex shader compilation failed\n"
-                  << infoLog << std::endl;
-        std::exit(1);
-    }
+    glAttachShader(shaderProgram1, vertexShader);
+    glAttachShader(shaderProgram2, vertexShader);
+    glAttachShader(shaderProgram1, fragmentShader1);
+    glAttachShader(shaderProgram2, fragmentShader2);
 
-    // create a fragment shader
-    auto fragmentShaderSource = loadShader("fragment_shader_1.glsl");
-    auto f = fragmentShaderSource.c_str();
-
-    auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &f, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "Error: Fragment shader compilation failed\n"
-                  << infoLog << std::endl;
-        std::exit(1);
-    }
-
-    // create a shader program
-    auto shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "Error: Shader program linking failed\n"
-                  << infoLog << std::endl;
-    }
+    glLinkProgram(shaderProgram1);
+    glLinkProgram(shaderProgram2);
 
     glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    glDeleteShader(fragmentShader1);
+    glDeleteShader(fragmentShader2);
 
     float vertices1[] = {
         0.25, 0.25, 0.0,
@@ -155,7 +139,6 @@ int main(void)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
     // vertex buffer object, this is the buffer that will store our vertex data
-    glUseProgram(shaderProgram);
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -167,8 +150,11 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // copy our vertex data into the buffer
+        glUseProgram(shaderProgram1);
         glBindVertexArray(VAOs[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glUseProgram(shaderProgram2);
         glBindVertexArray(VAOs[1]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         // check and call events and swap the buffers
@@ -179,7 +165,7 @@ int main(void)
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(2, VAOs);
     glDeleteBuffers(2, VBOs);
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(shaderProgram1);
     glfwTerminate();
     return 0;
 }
