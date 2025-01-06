@@ -11,8 +11,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 find_package(OpenGL REQUIRED)
 add_subdirectory(ext/glfw)
-target_link_libraries(${PROJECT_NAME} glfw glad)
-target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 
 # Include directories for the project
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -33,4 +31,5 @@ target_sources(glad
 
 target_include_directories(glad PUBLIC ${glad_SOURCE_DIR}/include)
 
-target_link_libraries(${PROJECT_NAME} glad)
+# Link libraries
+target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad)
