@@ -85,7 +85,12 @@ int main(void)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClearColor.xhtml
         glClear(GL_COLOR_BUFFER_BIT);         // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClear.xhtml
 
+        double time = glfwGetTime();
+        float green_val = ((float)sin(time) / 2.0f) + 0.5f;
+        int vertex_col_location = glGetUniformLocation(s.getProgram(), "ourColor");
         s.use();
+        glUniform4f(vertex_col_location, 0.0f, green_val, 0.0f, 1.0f);
+
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
@@ -94,7 +99,6 @@ int main(void)
     // optional: de-allocate all resources once they've outlived their purpose:
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
-    // glDeleteProgram(shaderProgram);
     glfwTerminate();
     return 0;
 }

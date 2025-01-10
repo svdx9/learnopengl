@@ -16,6 +16,7 @@ public:
         LINK,
     };
     bool loadShaders(std::string vs, std::string fs);
+    GLint getProgram();
     void use();
 
 private:

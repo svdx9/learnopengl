@@ -105,6 +105,11 @@ void ShaderProgram::use()
     }
 };
 
+GLint ShaderProgram::getProgram()
+{
+    return m_program;
+}
+
 std::string ShaderProgram::fileToString(const std::string &filePath)
 {
     std::filesystem::path file = filePath;
