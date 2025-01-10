@@ -28,9 +28,9 @@ int main(void)
     // 1. setup an array of vertices with position and color for a triangle
 
     GLfloat vertices[] = {
-        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f};
+        -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f};
 
     // 2. Set up buffer on the GPU
     GLuint vao, vbo;
