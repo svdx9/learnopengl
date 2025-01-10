@@ -88,8 +88,11 @@ int main(void)
         double time = glfwGetTime();
         float green_val = ((float)sin(time) / 2.0f) + 0.5f;
         int vertex_col_location = glGetUniformLocation(s.getProgram(), "ourColor");
+        int vertex_offset_location = glGetUniformLocation(s.getProgram(), "offset");
         s.use();
         glUniform4f(vertex_col_location, 0.0f, green_val, 0.0f, 1.0f);
+        // float offset_x = ((float)sin(time) / 3.0f);
+        glUniform3f(vertex_offset_location, ((float)sin(time) / 3.0f), ((float)cos(time) / 3.0f), 0.0);
 
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
