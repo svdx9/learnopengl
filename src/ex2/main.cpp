@@ -16,8 +16,25 @@ const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 GLFWwindow *gWindow = NULL;
 
+GLfloat interpolate_val = 0.5;
+
 std::filesystem::path shaderDir = getEnvVar("SHADERS_DIR");
 std::filesystem::path assetsDir = getEnvVar("ASSETS_DIR");
+
+void glfw_onKey_x(GLFWwindow *window, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    if (key == GLFW_KEY_UP)
+    {
+        interpolate_val = std::min(1.0, interpolate_val + 0.01);
+    }
+    if (key == GLFW_KEY_DOWN)
+    {
+        interpolate_val = std::max(0.0, interpolate_val - 0.01);
+    }
+}
+
 int main()
 {
 
@@ -121,11 +138,14 @@ int main()
     s.use();
     glUniform1i(glGetUniformLocation(s.getProgram(), "texture1"), 0);
     glUniform1i(glGetUniformLocation(s.getProgram(), "texture2"), 1);
+
+    glfwSetKeyCallback(gWindow, glfw_onKey_x);
     while (!glfwWindowShouldClose(gWindow))
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         s.use();
+        glUniform1f(glGetUniformLocation(s.getProgram(), "interpolate_val"), interpolate_val);
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(gWindow);
