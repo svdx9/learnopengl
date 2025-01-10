@@ -8,6 +8,8 @@
 #include <filesystem>
 
 #include "utility.h"
+#include "shader_program.hpp"
+
 // Global Variables
 const char *APP_TITLE = "Introduction to Modern OpenGL - Hello Colored Triangle";
 const int gWindowWidth = 800;
@@ -86,58 +88,12 @@ int main(void)
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    // 3. Create vertex shader
-    std::string vertexShaderSource = loadShader("vertex_shader_1.glsl");
-    const GLchar *v = vertexShaderSource.c_str();
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER); // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml
-    glShaderSource(vs, 1, &v, NULL);              // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml
-    glCompileShader(vs);
-
-    // 4. Create fragment shader
-    std::string fragmentShaderSource = loadShader("fragment_shader_1.glsl");
-    const GLchar *f = fragmentShaderSource.c_str();
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER); // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml
-    glShaderSource(fs, 1, &f, NULL);                // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml
-    glCompileShader(fs);
-
-    // check for errrors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
-    if (!success)
+    std::filesystem::path dir = getEnvVar("SHADERS_DIR");
+    ShaderProgram s = ShaderProgram(dir);
+    if (!s.loadShaders("01_vertex_shader.glsl", "02_fragment_shader.glsl"))
     {
-        glGetShaderInfoLog(vs, 512, NULL, infoLog);
-        std::cout << "Error: Vertex shader compilation failed\n"
-                  << infoLog << std::endl;
-        std::exit(1);
-    }
-    glGetShaderiv(fs, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vs, 512, NULL, infoLog);
-        std::cout << "Error: Fragment shader compilation failed\n"
-                  << infoLog << std::endl;
-        std::exit(1);
-    }
-
-    // 5. Create shader program and link shaders to program
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vs); // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml
-    glAttachShader(shaderProgram, fs); // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml
-    glLinkProgram(shaderProgram);      // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glLinkProgram.xhtml
-
-    // Check for linker errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "Error: Shader program linking failed\n"
-                  << infoLog << std::endl;
-    }
-
-    // Clean up shaders, do not need them anymore since they are linked to a shader program
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+        return 1;
+    };
 
     // render loop
     while (!glfwWindowShouldClose(gWindow))
@@ -145,8 +101,7 @@ int main(void)
         glfwPollEvents();
         // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glUseProgram(shaderProgram);
+        s.use();
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
@@ -155,7 +110,7 @@ int main(void)
     // optional: de-allocate all resources once they've outlived their purpose:
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
-    glDeleteProgram(shaderProgram);
+    // glDeleteProgram(shaderProgram);
     glfwTerminate();
     return 0;
 }
