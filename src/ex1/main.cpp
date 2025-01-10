@@ -16,24 +16,6 @@ const int gWindowWidth = 800;
 const int gWindowHeight = 600;
 GLFWwindow *gWindow = NULL;
 
-// Function to load a shader from a file
-std::string loadShader(const std::string &filePath)
-{
-    std::filesystem::path dir = getEnvVar("SHADERS_DIR");
-    std::filesystem::path file = filePath;
-    std::filesystem::path fullPath = dir / file;
-
-    std::ifstream shaderFile(fullPath);
-    if (!shaderFile.is_open())
-    {
-        throw std::runtime_error("Failed to open shader file: " + filePath);
-    }
-
-    std::stringstream shaderStream;
-    shaderStream << shaderFile.rdbuf();
-    return shaderStream.str();
-}
-
 int main(void)
 {
 
@@ -90,7 +72,7 @@ int main(void)
 
     std::filesystem::path dir = getEnvVar("SHADERS_DIR");
     ShaderProgram s = ShaderProgram(dir);
-    if (!s.loadShaders("01_vertex_shader.glsl", "02_fragment_shader.glsl"))
+    if (!s.loadShaders("01_shader.vs", "01_shader.fs"))
     {
         return 1;
     };
@@ -99,8 +81,10 @@ int main(void)
     while (!glfwWindowShouldClose(gWindow))
     {
         glfwPollEvents();
-        // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClearColor.xhtml
+        glClear(GL_COLOR_BUFFER_BIT);         // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClear.xhtml
+
         s.use();
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
