@@ -7,15 +7,26 @@
 #include <stdexcept>
 #include <filesystem>
 
-#include "utility.h"
-#include "shader_program.hpp"
+std::string getEnvVar(const std::string &key)
+{
+    const char *val = std::getenv(key.c_str());
+    if (val == nullptr)
+    {
+        throw std::runtime_error("Environment variable not found: " + key);
+    }
+    return std::string(val);
+}
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
-const char *APP_TITLE = "Introduction to Modern OpenGL - Hello Colored Triangle";
-const int gWindowWidth = 800;
-const int gWindowHeight = 600;
-GLFWwindow *gWindow = NULL;
-
-bool initOpengl()
+void glfw_onKey(GLFWwindow *window, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+}
+bool initOpengl(GLFWwindow *&gWindow, int width, int height)
 {
     if (!glfwInit())
     {
@@ -29,10 +40,10 @@ bool initOpengl()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // forward compatible with newer versions of OpenGL as they become available but not backward compatible (it will not run on devices that do not support OpenGL 3.3
 
-    gWindow = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+    gWindow = glfwCreateWindow(width, height, "OpenGL", NULL, NULL);
     if (gWindow == NULL)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        std::cout << "noooooooooo Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return false;
     }
@@ -51,10 +62,11 @@ bool initOpengl()
     glClearColor(0.23f, 0.38f, 0.47f, 1.0f);
 
     // Define the viewport dimensions
-    framebuffer_size_callback(gWindow, gWindowWidth, gWindowHeight);
+    framebuffer_size_callback(gWindow, width, height);
+
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+    std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
     return true;
-}
-int main()
-{
-    return 0;
 }
