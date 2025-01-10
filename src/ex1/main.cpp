@@ -28,9 +28,9 @@ int main(void)
     // 1. setup an array of vertices with position and color for a triangle
 
     GLfloat vertices[] = {
-        -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f};
+        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f};
 
     // 2. Set up buffer on the GPU
     GLuint vao, vbo;
@@ -70,6 +70,12 @@ int main(void)
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
+    float texCoords[] = {
+        0.0f, 0.0f, // lower-left corner
+        1.0f, 0.0f, // lower-right corner
+        0.5f, 1.0f  // top-center corner
+    };
+
     std::filesystem::path dir = getEnvVar("SHADERS_DIR");
     ShaderProgram s = ShaderProgram(dir);
     if (!s.loadShaders("01_shader.vs", "01_shader.fs"))
@@ -86,13 +92,13 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);         // https://registry.khronos.org/OpenGL-Refpages/gl4/html/glClear.xhtml
 
         double time = glfwGetTime();
-        float green_val = ((float)sin(time) / 2.0f) + 0.5f;
+        // float green_val = ((float)sin(time) / 2.0f) + 0.5f;
         int vertex_col_location = glGetUniformLocation(s.getProgram(), "ourColor");
-        int vertex_offset_location = glGetUniformLocation(s.getProgram(), "offset");
+        // int vertex_offset_location = glGetUniformLocation(s.getProgram(), "offset");
         s.use();
-        glUniform4f(vertex_col_location, 0.0f, green_val, 0.0f, 1.0f);
+        // glUniform4f(vertex_col_location, 0.0f, green_val, 0.0f, 1.0f);
         // float offset_x = ((float)sin(time) / 3.0f);
-        glUniform3f(vertex_offset_location, ((float)sin(time) / 3.0f), ((float)cos(time) / 3.0f), 0.0);
+        // glUniform3f(vertex_offset_location, ((float)sin(time) / 3.0f), ((float)cos(time) / 3.0f), 0.0);
 
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
