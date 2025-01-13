@@ -11,15 +11,6 @@
 #include "stb_image.h"
 #include "shader_program.hpp"
 
-// int main()
-// {
-//     glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-//     glm::mat4 trans = glm::mat4(1.0f);
-//     trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-//     vec = trans * vec;
-//     std::cout << vec.x << vec.y << vec.z << std::endl;
-// }
-
 const char *APP_TITLE = "Introduction to Modern OpenGL - Hello Colored Triangle";
 const int gWindowWidth = 800;
 const int gWindowHeight = 600;
@@ -132,18 +123,21 @@ int main()
     glUniform1i(glGetUniformLocation(s.getProgram(), "texture1"), 0);
     glUniform1i(glGetUniformLocation(s.getProgram(), "texture2"), 1);
 
-    // create a model matrix, the model matrix consists of tranlations, scaling and/or rotations
-    // we'd like to apply to transform all object's vertices to the global worlds space. Lwt's transfom our
-    // plane a bit by rotating it on the x-axis so it looks like it's laying on the floor.
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // send the model, view and projection matrices to the shaders
+    while (!glfwWindowShouldClose(gWindow))
+    {
+        // create a model matrix, the model matrix consists of tranlations, scaling and/or rotations
+        // we'd like to apply to transform all object's vertices to the global worlds space. Lwt's transfom our
+        // plane a bit by rotating it on the x-axis so it looks like it's laying on the floor.
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    // create a view matrix:
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        // create a view matrix:
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0));
 
-    // define the projection matrix
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        // define the projection matrix
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
     // send the model, view and projection matrices to the shaders
     while (!glfwWindowShouldClose(gWindow))
