@@ -139,9 +139,7 @@ int main()
         // define the projection matrix
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-    // send the model, view and projection matrices to the shaders
-    while (!glfwWindowShouldClose(gWindow))
-    {
+        // send the model, view and projection matrices to the shaders
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         s.use();
