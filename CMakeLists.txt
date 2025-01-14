@@ -29,6 +29,7 @@ add_custom_executable(ex1 src/ex1)
 add_custom_executable(ex2 src/ex2)
 add_custom_executable(ex3 src/ex3)
 add_custom_executable(ex4 src/ex4)
+add_custom_executable(ex5 src/ex5)
 
 # Add subdirectories
 add_subdirectory(ext/glfw)
